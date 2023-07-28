@@ -1,0 +1,25 @@
+# Ignore all
+*
+
+# Except these
+
+!.gitignore
+!LICENSE
+!README
+
+!Makefile
+!compile_flags.txt
+
+!build
+!build/.gitkeep
+
+!lib
+!lib/.gitkeep
+
+!include
+!include/*
+
+!src
+!src/*
+!src/core
+!src/core/*
