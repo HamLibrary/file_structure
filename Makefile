@@ -17,10 +17,11 @@ MAIN_DIR := ./src
 SRC_FILES := $(shell find $(SRC_DIR) -type f -name *.c)
 OBJ_FILES := $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%,$(SRC_FILES:.c=.o))
 DEP_FILES := $(OBJ_FILES:.o=.d)
+LIB_FILES := $(foreach d,$(GLOBAL_LIB_DIR) $(LIB_DIR),$(shell find $(d) -type f -name *.a))
 
 CC := clang
 IFLAGS := -I$(GLOBAL_INCLUDE_DIR) -I$(INCLUDE_DIR)
-LFLAGS := -L$(GLOBAL_LIB_DIR) -L$(LIB_DIR)
+LFLAGS := -fuse-ld=lld
 DFLAGS := -MP -MD
 CFLAGS := -Wall -Wextra -g -O0
 
@@ -34,7 +35,7 @@ test: $(TEST)
 # how to build the binaries
 $(BINARY) $(TEST): $(OBJ_FILES)
 	@echo "link: $^"
-	$(CC) $(LFLAGS) -o $@ $^
+	$(CC) $(LFLAGS) -o $@ $^ $(LIB_FILES)
 
 # add in the per-target specific objects
 $(BINARY): $(BUILD_DIR)/main.o
