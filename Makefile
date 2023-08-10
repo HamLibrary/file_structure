@@ -1,3 +1,5 @@
+CDEFINES ?=
+
 PROJECT_NAME = $(notdir $(shell pwd))
 PROJECT_LIB = ./lib$(PROJECT_NAME).a
 
@@ -21,9 +23,9 @@ LIB_FILES := $(foreach d,$(GLOBAL_LIB_DIR) $(LIB_DIR),$(shell find $(d) -type f 
 
 CC := clang
 IFLAGS := -I$(GLOBAL_INCLUDE_DIR) -I$(INCLUDE_DIR)
-LFLAGS := -fuse-ld=lld
+LFLAGS := -fuse-ld=mold
 DFLAGS := -MP -MD
-CFLAGS := -Wall -Wextra -g -O0
+CFLAGS := -Wall -Wextra -g0 -O0
 
 # tell make where to look for source files
 VPATH = $(sort $(dir $(SRC_FILES))) $(MAIN_DIR)
@@ -54,7 +56,7 @@ $(BUILD_DIR)/%.s: $(BUILD_DIR)/%.i
 # how to build one preproc file from one source file
 $(BUILD_DIR)/%.i: %.c
 	@echo "preprocess: $^"
-	$(CC) -E $(IFLAGS) $(DFLAGS) -o $@ $<
+	$(CC) -E $(IFLAGS) $(DFLAGS) -o $@ $< $(foreach d,$(CDEFINES),-D$(d))
 
 clean:
 	rm -rf $(BINARY) $(TEST) $(BUILD_DIR)/[^.]*
@@ -62,6 +64,7 @@ clean:
 IIDIR := $(GLOBAL_INCLUDE_DIR)
 ILDIR := $(GLOBAL_LIB_DIR)
 
+# Consider symlink to $(PROJECT_LIB) and not rm $(PROJECT_LIB)
 install: $(PROJECT_LIB)
 	@mkdir -p $(IIDIR) $(ILDIR)
 	install -d $(IIDIR) $(ILDIR)
